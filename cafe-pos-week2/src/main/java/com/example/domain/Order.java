@@ -3,6 +3,7 @@ package com.example.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.Package.PaymentStrategy;
 import com.example.common.Money;
 
 public final class Order {
@@ -38,6 +39,12 @@ public final class Order {
 
     public List<LineItem> items() {
         return items;
+    }
+
+    public void pay(PaymentStrategy strategy) {
+        if (strategy == null)
+            throw new IllegalArgumentException("strategy required");
+        strategy.pay(this);
     }
 
 }

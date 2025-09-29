@@ -1,7 +1,7 @@
 package com.example.demo;
 
-import com.example.Package.CardPayment;
-import com.example.Package.CashPayment;
+import com.example.payment.CardPayment;
+import com.example.payment.CashPayment;
 import com.example.catalog.Catalog;
 import com.example.catalog.InMemoryCatalog;
 import com.example.common.Money;

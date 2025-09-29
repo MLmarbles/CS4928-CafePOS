@@ -1,4 +1,4 @@
-import com.example.Package.PaymentStrategy;
+import com.example.payment.PaymentStrategy;
 import com.example.common.Money;
 import com.example.common.SimpleProduct;
 import com.example.domain.LineItem;

@@ -3,7 +3,7 @@ package com.example.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.Package.PaymentStrategy;
+import com.example.payment.PaymentStrategy;
 import com.example.common.Money;
 
 public final class Order {

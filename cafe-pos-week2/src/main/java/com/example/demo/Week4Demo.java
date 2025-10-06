@@ -20,7 +20,7 @@ public final class Week4Demo {
  order.register(new KitchenDisplay());
  order.register(new DeliveryDesk());
  order.register(new CustomerNotifier());
- order.addItem(new LineItem(catalog.findById("PESP").orElseThrow(), 1));
+ order.addItem(new LineItem(catalog.findById("P-ESP").orElseThrow(), 1));
  order.pay(new CashPayment());
  order.markReady();
  }

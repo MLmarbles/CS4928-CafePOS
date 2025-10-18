@@ -5,8 +5,10 @@ import com.example.common.Product;
 import com.example.factory.ProductFactory;
 import com.example.pricing.DiscountPolicy;
 import com.example.pricing.FixedCouponDiscount;
+import com.example.pricing.FixedRateTaxPolicy;
 import com.example.pricing.LoyaltyPercentDiscount;
 import com.example.pricing.NoDiscount;
+import com.example.pricing.TaxPolicy;
 
 public class OrderManagerGod {
     public static int TAX_PERCENT = 10;
@@ -47,10 +49,8 @@ public class OrderManagerGod {
         if (discounted.asBigDecimal().signum() < 0)
             discounted = Money.zero();
 
-        // Feature Envy / Shotgun Surgery risk: tax inline
-        var tax = Money.of(discounted.asBigDecimal()
-                .multiply(java.math.BigDecimal.valueOf(TAX_PERCENT)) // Global state
-                .divide(java.math.BigDecimal.valueOf(100)));
+        TaxPolicy taxPolicy = new FixedRateTaxPolicy(10);
+        Money tax = taxPolicy.taxOn(discounted);
         var total = discounted.add(tax);
 
         // God Class / Long Method: payment I/O inline

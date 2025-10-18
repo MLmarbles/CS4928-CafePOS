@@ -20,8 +20,22 @@ import com.example.pricing.ReceiptPrinter;
 import com.example.pricing.TaxPolicy;
 
 public class OrderManagerGod {
-    public static int TAX_PERCENT = 10;
-    public static String LAST_DISCOUNT_CODE = null;
+    public final class OrderManager {
+        private final ProductFactory factory;
+        private final DiscountPolicy discountPolicy;
+        private final TaxPolicy taxPolicy;
+        private final ReceiptPrinter printer;
+        private final PaymentStrategy paymentStrategy;
+
+        public OrderManager(ProductFactory factory, DiscountPolicy discountPolicy,
+                TaxPolicy taxPolicy, ReceiptPrinter printer, PaymentStrategy paymentStrategy) {
+            this.factory = factory;
+            this.discountPolicy = discountPolicy;
+            this.taxPolicy = taxPolicy;
+            this.printer = printer;
+            this.paymentStrategy = paymentStrategy;
+        }
+    }
 
     public static String process(String recipe, int qty, String paymentType, String discountCode,
             boolean printReceipt) {
@@ -70,7 +84,7 @@ public class OrderManagerGod {
         };
 
         Order dummyOrder = new Order(OrderIds.next());
-        dummyOrder.addItem(new LineItem(product, qty)); 
+        dummyOrder.addItem(new LineItem(product, qty));
 
         payment.pay(dummyOrder);
 

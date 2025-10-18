@@ -3,6 +3,10 @@ package com.example.smelly;
 import com.example.common.Money;
 import com.example.common.Product;
 import com.example.factory.ProductFactory;
+import com.example.pricing.DiscountPolicy;
+import com.example.pricing.FixedCouponDiscount;
+import com.example.pricing.LoyaltyPercentDiscount;
+import com.example.pricing.NoDiscount;
 
 public class OrderManagerGod {
     public static int TAX_PERCENT = 10;
@@ -13,7 +17,8 @@ public class OrderManagerGod {
         ProductFactory factory = new ProductFactory();
         Product product = factory.create(recipe);
 
-        // God Class & Long Method: One method performs creation, pricing, discounting, tax, and printing
+        // God Class & Long Method: One method performs creation, pricing, discounting,
+        // tax, and printing
         Money unitPrice;
 
         try {
@@ -29,24 +34,13 @@ public class OrderManagerGod {
             qty = 1;
         Money subtotal = unitPrice.multiply(qty);
 
-        Money discount = Money.zero();
-        if (discountCode != null) {
-            // Primitive Obsession: using raw string
-            if (discountCode.equalsIgnoreCase("LOYAL5")) {
-                // Duplicated Logic: BigDecimal math inline
-                // Feature Envy / Shotgun Surgery risk: hard-coded discount rules here
-                discount = Money.of(subtotal.asBigDecimal().multiply(java.math.BigDecimal.valueOf(5))
-                        .divide(java.math.BigDecimal.valueOf(100)));
-            } else if (discountCode.equalsIgnoreCase("COUPON1")) {
-                discount = Money.of(1.00);
-            } else if (discountCode.equalsIgnoreCase("NONE")) {
-                discount = Money.zero();
-            } else {
-                discount = Money.zero();
-            }
-            // Global / Static State: LAST_DISCOUNT_CODE
-            LAST_DISCOUNT_CODE = discountCode;
-        }
+        DiscountPolicy discountPolicy = switch (discountCode == null ? "" : discountCode.toUpperCase()) {
+            case "LOYAL5" -> new LoyaltyPercentDiscount(5);
+            case "COUPON1" -> new FixedCouponDiscount(Money.of(1.00));
+            default -> new NoDiscount();
+        };
+
+        Money discount = discountPolicy.discountOf(subtotal);
 
         // Duplicated Logic: BigDecimal subtraction inline
         Money discounted = Money.of(subtotal.asBigDecimal().subtract(discount.asBigDecimal()));

@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class Week6CharacterizationTests {
 @Test void no_discount_cash_payment() {
 String receipt = OrderManagerGod.process("ESP+SHOT+OAT", 1,"CASH", "NONE", false);
-System.out.println(receipt);
 assertTrue(receipt.startsWith("Order (ESP+SHOT+OAT) x1"));
 assertTrue(receipt.contains("Subtotal: 3.80"));
 assertTrue(receipt.contains("Tax (10%): 0.38"));

@@ -17,7 +17,7 @@ public class OrderManagerGod {
         Money unitPrice;
 
         try {
-            var priced = product instanceof com.example.decorator.Priced p
+            var priced = product instanceof com.example.common.Priced p
                     ? p.price()
                     : product.basePrice();
             unitPrice = priced;

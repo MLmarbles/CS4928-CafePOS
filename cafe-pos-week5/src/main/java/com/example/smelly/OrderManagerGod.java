@@ -8,6 +8,8 @@ import com.example.pricing.FixedCouponDiscount;
 import com.example.pricing.FixedRateTaxPolicy;
 import com.example.pricing.LoyaltyPercentDiscount;
 import com.example.pricing.NoDiscount;
+import com.example.pricing.PricingService;
+import com.example.pricing.ReceiptPrinter;
 import com.example.pricing.TaxPolicy;
 
 public class OrderManagerGod {
@@ -66,23 +68,13 @@ public class OrderManagerGod {
             }
         }
 
-        StringBuilder receipt = new StringBuilder();
-        receipt.append("Order (").append(recipe).append(") x").append(qty).append("\n");
-        receipt.append("Subtotal: ").append(subtotal).append("\n");
+        ReceiptPrinter printer = new ReceiptPrinter();
+        String receiptText = printer.format(recipe, qty, new PricingService.PricingResult(subtotal, discount, tax, total), 10);
 
-        if (discount.asBigDecimal().signum() > 0) {
-            receipt.append("Discount: -").append(discount).append("\n");
-        }
+        if (printReceipt)
+            System.out.println(receiptText);
+        return receiptText;
 
-        receipt.append("Tax (").append(TAX_PERCENT).append("%): ").append(tax).append("\n");
-        receipt.append("Total: ").append(total);
-
-        String out = receipt.toString();
-        if (printReceipt) {
-            System.out.println(out);
-        }
-
-        return out;
     }
 
 }

@@ -26,8 +26,7 @@ public final class LineItem {
     }
 
     public Money lineTotal() {
-        Money unit = (product instanceof Priced p) ? p.price() :
-                product.basePrice();
+        Money unit = (product instanceof Priced p) ? p.price() : product.basePrice();
         return unit.multiply(quantity);
     }
 }

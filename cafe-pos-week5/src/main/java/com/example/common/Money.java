@@ -11,6 +11,13 @@ public final class Money implements Comparable<Money> {
         return new Money(BigDecimal.valueOf(value));
     }
 
+    public static Money of(BigDecimal value) {
+        if (value == null) {
+            throw new IllegalArgumentException("BigDecimal value cannot be null");
+        }
+        return new Money(value);
+    }
+
     public static Money zero() {
         return new Money(BigDecimal.ZERO);
     }
@@ -65,5 +72,9 @@ public final class Money implements Comparable<Money> {
         if (other == null)
             throw new IllegalArgumentException("Money to compare cannot be null");
         return this.amount.compareTo(other.amount);
+    }
+
+    public BigDecimal asBigDecimal() {
+        return this.amount;
     }
 }

@@ -2,7 +2,14 @@ package com.example.smelly;
 
 import com.example.common.Money;
 import com.example.common.Product;
+import com.example.domain.LineItem;
+import com.example.domain.Order;
+import com.example.domain.OrderIds;
 import com.example.factory.ProductFactory;
+import com.example.payment.CardPayment;
+import com.example.payment.CashPayment;
+import com.example.payment.PaymentStrategy;
+import com.example.payment.WalletPayment;
 import com.example.pricing.DiscountPolicy;
 import com.example.pricing.FixedCouponDiscount;
 import com.example.pricing.FixedRateTaxPolicy;
@@ -55,21 +62,21 @@ public class OrderManagerGod {
         Money tax = taxPolicy.taxOn(discounted);
         var total = discounted.add(tax);
 
-        // God Class / Long Method: payment I/O inline
-        if (paymentType != null) {
-            if (paymentType.equalsIgnoreCase("CASH")) {
-                System.out.println("[Cash] Customer paid " + total + " EUR");
-            } else if (paymentType.equalsIgnoreCase("CARD")) {
-                System.out.println("[Card] Customer paid " + total + " EUR with card ****1234");
-            } else if (paymentType.equalsIgnoreCase("WALLET")) {
-                System.out.println("[Wallet] Customer paid " + total + " EUR via wallet user-wallet-789");
-            } else {
-                System.out.println("[UnknownPayment] " + total);
-            }
-        }
+        PaymentStrategy payment = switch (paymentType == null ? "" : paymentType.toUpperCase()) {
+            case "CASH" -> new CashPayment();
+            case "CARD" -> new CardPayment("1234"); // supply dummy card for now
+            case "WALLET" -> new WalletPayment("user-wallet-789"); // dummy wallet id
+            default -> order -> System.out.println("[UnknownPayment] " + order.totalWithTax(10));
+        };
+
+        Order dummyOrder = new Order(OrderIds.next());
+        dummyOrder.addItem(new LineItem(product, qty)); 
+
+        payment.pay(dummyOrder);
 
         ReceiptPrinter printer = new ReceiptPrinter();
-        String receiptText = printer.format(recipe, qty, new PricingService.PricingResult(subtotal, discount, tax, total), 10);
+        String receiptText = printer.format(recipe, qty,
+                new PricingService.PricingResult(subtotal, discount, tax, total), 10);
 
         if (printReceipt)
             System.out.println(receiptText);

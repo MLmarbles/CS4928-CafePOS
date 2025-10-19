@@ -30,4 +30,9 @@ public final class SimpleProduct implements Product, Priced {
     public Money price() {
         return basePrice();
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

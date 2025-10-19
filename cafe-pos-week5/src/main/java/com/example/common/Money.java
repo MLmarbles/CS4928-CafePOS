@@ -17,6 +17,9 @@ public final class Money implements Comparable<Money> {
         }
         return new Money(value);
     }
+    public BigDecimal amount() {
+        return amount;
+    }
 
     public static Money zero() {
         return new Money(BigDecimal.ZERO);

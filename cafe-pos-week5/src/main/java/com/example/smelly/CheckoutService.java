@@ -1,6 +1,7 @@
 package com.example.smelly;
 
 import com.example.common.Money;
+import com.example.common.Product;
 import com.example.domain.Order;
 import com.example.factory.ProductFactory;
 import com.example.payment.PaymentStrategy;
@@ -16,28 +17,22 @@ public final class CheckoutService {
     private final int taxPercent;
 
     public CheckoutService(ProductFactory factory, PricingService pricing,
-                           ReceiptPrinter printer, int taxPercent) {
+            ReceiptPrinter printer, int taxPercent) {
         this.factory = factory;
         this.pricing = pricing;
         this.printer = printer;
         this.taxPercent = taxPercent;
     }
 
-    public String checkout(String recipe, int qty, Order order, PaymentStrategy payment) {
-        if (qty <= 0) qty = 1;
-
-        var product = factory.create(recipe);
+    public String checkout(String recipe, int qty) {
+        Product product = factory.create(recipe);
+        if (qty <= 0)
+            qty = 1;
         Money unit = (product instanceof com.example.common.Priced p)
-                     ? p.price()
-                     : product.basePrice();
+                ? p.price()
+                : product.basePrice();
         Money subtotal = unit.multiply(qty);
-
-        PricingResult result = pricing.price(subtotal);
-
-        String receiptText = printer.format(recipe, qty, result, taxPercent);
-
-        order.pay(payment);
-
-        return receiptText;
+        var result = pricing.price(subtotal);
+        return printer.format(recipe, qty, result, taxPercent);
     }
 }

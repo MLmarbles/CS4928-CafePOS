@@ -42,8 +42,6 @@ public class OrderManagerGod {
         ProductFactory factory = new ProductFactory();
         Product product = factory.create(recipe);
 
-        // God Class & Long Method: One method performs creation, pricing, discounting,
-        // tax, and printing
         Money unitPrice;
 
         try {
@@ -67,7 +65,6 @@ public class OrderManagerGod {
 
         Money discount = discountPolicy.discountOf(subtotal);
 
-        // Duplicated Logic: BigDecimal subtraction inline
         Money discounted = Money.of(subtotal.asBigDecimal().subtract(discount.asBigDecimal()));
         if (discounted.asBigDecimal().signum() < 0)
             discounted = Money.zero();
@@ -78,8 +75,8 @@ public class OrderManagerGod {
 
         PaymentStrategy payment = switch (paymentType == null ? "" : paymentType.toUpperCase()) {
             case "CASH" -> new CashPayment();
-            case "CARD" -> new CardPayment("1234"); // supply dummy card for now
-            case "WALLET" -> new WalletPayment("user-wallet-789"); // dummy wallet id
+            case "CARD" -> new CardPayment("1234");
+            case "WALLET" -> new WalletPayment("user-wallet-789");
             default -> order -> System.out.println("[UnknownPayment] " + order.totalWithTax(10));
         };
 

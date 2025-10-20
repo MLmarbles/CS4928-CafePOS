@@ -27,9 +27,7 @@ public class Week6CharacterizationTestsCheckout {
         PricingService pricing = new PricingService(new NoDiscount(), new FixedRateTaxPolicy(10));
         checkoutService = new CheckoutService(factory, pricing, printer, 10);
 
-        Order order = new Order(1);
-        PaymentStrategy payment = o -> {};
-        String receipt = checkoutService.checkout("ESP+SHOT+OAT", 1, order, payment);
+        String receipt = checkoutService.checkout("ESP+SHOT+OAT", 1);
 
         assertTrue(receipt.startsWith("Order (ESP+SHOT+OAT) x1"));
         assertTrue(receipt.contains("Subtotal: 3.80"));
@@ -42,9 +40,7 @@ public class Week6CharacterizationTestsCheckout {
         PricingService pricing = new PricingService(new LoyaltyPercentDiscount(5), new FixedRateTaxPolicy(10));
         checkoutService = new CheckoutService(factory, pricing, printer, 10);
 
-        Order order = new Order(2);
-        PaymentStrategy payment = o -> {};
-        String receipt = checkoutService.checkout("LAT+L", 2, order, payment);
+        String receipt = checkoutService.checkout("LAT+L", 2);
 
         assertTrue(receipt.contains("Subtotal: 7.80"));
         assertTrue(receipt.contains("Discount: -0.39"));
@@ -57,9 +53,7 @@ public class Week6CharacterizationTestsCheckout {
         PricingService pricing = new PricingService(new FixedCouponDiscount(Money.of(1.00)), new FixedRateTaxPolicy(10));
         checkoutService = new CheckoutService(factory, pricing, printer, 10);
 
-        Order order = new Order(3);
-        PaymentStrategy payment = o -> {};
-        String receipt = checkoutService.checkout("ESP+SHOT", 0, order, payment);
+        String receipt = checkoutService.checkout("ESP+SHOT", 0);
 
         assertTrue(receipt.contains("Order (ESP+SHOT) x1"));
         assertTrue(receipt.contains("Subtotal: 3.30"));

@@ -1,12 +1,14 @@
 package com.example.smelly;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.common.Money;
 import com.example.common.Product;
+import com.example.domain.LineItem;
 import com.example.domain.Order;
 import com.example.factory.ProductFactory;
-import com.example.payment.PaymentStrategy;
 import com.example.pricing.PricingService;
-import com.example.pricing.PricingService.PricingResult;
 import com.example.pricing.ReceiptPrinter;
 
 public final class CheckoutService {
@@ -16,6 +18,13 @@ public final class CheckoutService {
     private final ReceiptPrinter printer;
     private final int taxPercent;
 
+    public CheckoutService(PricingService pricing,
+                           ReceiptPrinter printer, int taxPercent) {
+        this.pricing = pricing;
+        this.printer = printer;
+        this.taxPercent = taxPercent;
+        factory = new ProductFactory();
+    }
     public CheckoutService(ProductFactory factory, PricingService pricing,
             ReceiptPrinter printer, int taxPercent) {
         this.factory = factory;
@@ -34,5 +43,15 @@ public final class CheckoutService {
         Money subtotal = unit.multiply(qty);
         var result = pricing.price(subtotal);
         return printer.format(recipe, qty, result, taxPercent);
+    }
+
+        public void checkout(Order order) {
+        List<LineItem> lineItems = order.items();
+        Money lineSubtotal = Money.zero(); 
+        for(LineItem i : lineItems) {
+            lineSubtotal = lineSubtotal.add(i.lineTotal());
+        }
+        var result = pricing.price(lineSubtotal);
+        printer.printReceipt(order, result, taxPercent);
     }
 }

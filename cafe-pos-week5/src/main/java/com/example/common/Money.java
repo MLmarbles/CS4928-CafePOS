@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 public final class Money implements Comparable<Money> {
-    private final BigDecimal amount;
+    private BigDecimal amount;
 
     public static Money of(double value) {
         return new Money(BigDecimal.valueOf(value));

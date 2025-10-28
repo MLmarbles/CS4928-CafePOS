@@ -27,6 +27,12 @@ public final class Order {
     public Money totalWithTax(int percent) {
         return subtotal().add(taxAtPercent(percent));
     }
+    public void removeLast() {
+        if (!items.isEmpty()) {
+            items.removeLast();
+            notifyObservers("itemRemoved");
+        }
+    }
 
     public long id() {
         return id;

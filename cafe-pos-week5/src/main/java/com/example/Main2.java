@@ -8,13 +8,24 @@ import com.example.common.Product;
 import com.example.common.SimpleProduct;
 import com.example.decorator.*;
 import com.example.domain.*;
+import com.example.factory.ProductFactory;
 import com.example.payment.CardPayment;
 import com.example.payment.CashPayment;
 import com.example.payment.PaymentStrategy;
 import com.example.payment.WalletPayment;
+import com.example.pricing.DiscountPolicy;
+import com.example.pricing.FixedCouponDiscount;
+import com.example.pricing.FixedRateTaxPolicy;
+import com.example.pricing.LoyaltyPercentDiscount;
+import com.example.pricing.NoDiscount;
+import com.example.pricing.PricingService;
+import com.example.pricing.ReceiptPrinter;
+import com.example.smelly.CheckoutService;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 
 public class Main2 {
@@ -40,6 +51,13 @@ public class Main2 {
             put(3, "Wallet");
         }};
 
+        Map<Integer, MenuEntry<DiscountPolicy>> discounts = new HashMap<>() {{
+            put(1, new MenuEntry<>("No Discount", new NoDiscount()));
+            put(2, new MenuEntry<>("Loyalty 5% (LOYAL5)", new LoyaltyPercentDiscount(5)));
+            put(3, new MenuEntry<>("Coupon 1 euro off (COUPON1)", new FixedCouponDiscount(Money.of(1.00))));
+        }};
+
+        MenuChooser<MenuEntry<DiscountPolicy>> discountChooser = new MenuChooser<MenuEntry<DiscountPolicy>>(discounts, "a discount option");
         MenuChooser<Product> productChooser = new MenuChooser<>(products, "a product");
         MenuChooser<MenuEntry<Function<Product, Product>>> extraChooser = new MenuChooser<>(extras, "an extra");
         MenuChooser<String> paymentChooser = new MenuChooser<>(payments, "a payment method");
@@ -78,16 +96,18 @@ public class Main2 {
         }
 
         // Order
+        // Create Observers
         var kitchen_display = new KitchenDisplay();
         var delivery_desk = new DeliveryDesk();
         var customer_notifier = new CustomerNotifier();
         Order product_order = new Order(OrderIds.next());
 
+        // Register observers and add products to order
         for (Product p : order) {
             product_order.register(kitchen_display);
             product_order.register(delivery_desk);
             product_order.register(customer_notifier);
-            product_order.addItem(new LineItem(p, 1));
+            product_order.addItem(new LineItem(p,1));
         }
 
         product_order.markReady();
@@ -112,18 +132,16 @@ public class Main2 {
                 System.out.println("Invalid payment method selected");
                 System.exit(1);
         }
-        paymentMethod.pay(product_order);
+        //paymentMethod.pay(product_order);
 
-        System.out.println("\n--- Order Summary ---");
-        float subtotal = 0;
-        for(LineItem li : product_order.items()) {
-            System.out.println(" - " + li.product().name() + " x"
-                    + li.quantity() + " = " + li.lineTotal());
-            subtotal += li.lineTotal().amount().floatValue();
-        }
-        System.out.println("Subtotal: €" + subtotal);
-        System.out.println("Tax: €" + subtotal * 0.10);
-        System.out.println("Total: €"+ product_order.totalWithTax(10));
-        System.out.println("Thank you for your purchase!");
+        // select discount
+        DiscountPolicy discountPolicy = discountChooser.display().getValue();
+
+        int tax = 10;
+        var pricing = new PricingService(discountPolicy, new FixedRateTaxPolicy(tax));
+        var printer = new ReceiptPrinter();
+        var checkout = new CheckoutService(pricing, printer, tax);
+        product_order.items().removeLast();
+        checkout.checkout(product_order);
     }
 }

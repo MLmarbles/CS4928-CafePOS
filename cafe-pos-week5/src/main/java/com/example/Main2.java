@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 
-
 public class Main2 {
     public static void main(String[] args) {
         // All menus for the CLI

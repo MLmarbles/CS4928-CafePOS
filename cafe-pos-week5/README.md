@@ -1,6 +1,6 @@
 # Lab 5 
 ## Decorator vs Factory
-```In your README, write three to four sentences explaining which construction approach you would expose to application developers and why```
+```In your README, write three to four sentences explaining which construction approach you would expose to application developers and why```  
 I would expose the Decorator construction approach to application developers,  
 in my opinion it is more clear how it works as it uses explicit function calls rather than strings which factory uses,  
 using strings could potentially lead to errors if the API / Factory changes or if they just mistype the wrong string,  

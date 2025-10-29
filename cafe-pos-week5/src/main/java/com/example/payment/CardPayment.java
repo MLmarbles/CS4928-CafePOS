@@ -1,5 +1,6 @@
 package com.example.payment;
 
+import com.example.common.Money;
 import com.example.domain.Order;
 
 public final class CardPayment implements PaymentStrategy {
@@ -18,5 +19,14 @@ public CardPayment(String cardNumber) {
 
 
         System.out.println("[Card] Customer paid " + order.totalWithTax(10) + "EUR with card " + sb);
+    }
+
+    @Override
+    public void pay(Money money) {
+        int length = cardNumber.length();
+        StringBuilder sb = new StringBuilder(cardNumber);
+        sb.replace(0, length - 4, "****");
+        System.out.println("[Card] Customer paid " + money + "EUR with card " + sb);
+
     }
 }

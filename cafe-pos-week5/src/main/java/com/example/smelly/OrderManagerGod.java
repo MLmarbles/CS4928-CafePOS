@@ -1,6 +1,7 @@
 package com.example.smelly;
 
 import com.example.common.Money;
+import com.example.common.Priced;
 import com.example.common.Product;
 import com.example.domain.LineItem;
 import com.example.domain.Order;
@@ -45,7 +46,7 @@ public class OrderManagerGod {
         Money unitPrice;
 
         try {
-            var priced = product instanceof com.example.common.Priced p
+            var priced = product instanceof Priced p
                     ? p.price()
                     : product.basePrice();
             unitPrice = priced;
@@ -77,7 +78,9 @@ public class OrderManagerGod {
             case "CASH" -> new CashPayment();
             case "CARD" -> new CardPayment("1234");
             case "WALLET" -> new WalletPayment("user-wallet-789");
-            default -> order -> System.out.println("[UnknownPayment] " + order.totalWithTax(10));
+//            default -> order -> System.out.println("[UnknownPayment] " + order.totalWithTax(10));
+            default ->
+                    throw new IllegalStateException("Unexpected value: " + (paymentType == null ? "" : paymentType.toUpperCase()));
         };
 
         Order dummyOrder = new Order(OrderIds.next());

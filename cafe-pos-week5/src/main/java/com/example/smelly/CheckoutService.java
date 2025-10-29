@@ -55,5 +55,6 @@ public final class CheckoutService {
         }
         var result = pricing.price(lineSubtotal);
         printer.printReceipt(order, result, taxPercent);
+        order.pay(payment_method, result.total());
     }
 }

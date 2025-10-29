@@ -75,6 +75,13 @@ public final class Order {
         strategy.pay(this);
         notifyObservers("paid");
     }
+    public void pay(PaymentStrategy strategy, Money amount) {
+        if (strategy == null) {
+            throw new IllegalArgumentException("strategy required");
+        }
+        strategy.pay(amount);
+        notifyObservers("paid");
+    }
 
     public void markReady() {
         notifyObservers("ready");

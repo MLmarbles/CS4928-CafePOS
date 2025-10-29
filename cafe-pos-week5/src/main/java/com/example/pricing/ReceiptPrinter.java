@@ -20,14 +20,14 @@ public final class ReceiptPrinter {
     public void printReceipt(Order order,
             PricingService.PricingResult pr, int taxPercent) {
         System.out.println("\n--- Order Summary ---");
-        for(LineItem li : order.items()) {
+        for (LineItem li : order.items()) {
             System.out.println(" - " + li.product().name() + " x"
                     + li.quantity() + " = " + li.lineTotal());
         }
-        System.out.println("Subtotal:  €" + pr.subtotal());
-        System.out.println("Discount: -€" + pr.discount());
-        System.out.println("Tax:       €" + pr.tax());
-        System.out.println("Total:     €" + pr.total());
+        System.out.println("Subtotal:  $" + pr.subtotal());
+        System.out.println("Discount: -$" + pr.discount());
+        System.out.println("Tax:       $" + pr.tax());
+        System.out.println("Total:     $" + pr.total());
         System.out.println("Thank you for your purchase at the Meowcafe!");
     }
 }

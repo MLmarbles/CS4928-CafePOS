@@ -8,6 +8,7 @@ import com.example.common.Product;
 import com.example.domain.LineItem;
 import com.example.domain.Order;
 import com.example.factory.ProductFactory;
+import com.example.payment.PaymentStrategy;
 import com.example.pricing.PricingService;
 import com.example.pricing.ReceiptPrinter;
 
@@ -19,12 +20,13 @@ public final class CheckoutService {
     private final int taxPercent;
 
     public CheckoutService(PricingService pricing,
-                           ReceiptPrinter printer, int taxPercent) {
+            ReceiptPrinter printer, int taxPercent) {
         this.pricing = pricing;
         this.printer = printer;
         this.taxPercent = taxPercent;
         factory = new ProductFactory();
     }
+
     public CheckoutService(ProductFactory factory, PricingService pricing,
             ReceiptPrinter printer, int taxPercent) {
         this.factory = factory;
@@ -45,10 +47,10 @@ public final class CheckoutService {
         return printer.format(recipe, qty, result, taxPercent);
     }
 
-        public void checkout(Order order) {
+    public void checkout(Order order, PaymentStrategy payment_method) {
         List<LineItem> lineItems = order.items();
-        Money lineSubtotal = Money.zero(); 
-        for(LineItem i : lineItems) {
+        Money lineSubtotal = Money.zero();
+        for (LineItem i : lineItems) {
             lineSubtotal = lineSubtotal.add(i.lineTotal());
         }
         var result = pricing.price(lineSubtotal);

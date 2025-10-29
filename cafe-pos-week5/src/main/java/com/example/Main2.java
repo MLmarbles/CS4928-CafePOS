@@ -31,39 +31,49 @@ import java.util.function.Function;
 public class Main2 {
     public static void main(String[] args) {
         // All menus for the CLI
-        Map<Integer, Product> products = new HashMap<>() {{
-            put(1, new SimpleProduct("ESP", "Espresso", Money.of(3.00)));
-            put(2, new SimpleProduct("LAT", "Latte", Money.of(4.00)));
-            put(3, new SimpleProduct("CAP", "Cappuccino", Money.of(4.50)));
-            put(4, new SimpleProduct("AMER", "Americano", Money.of(2.50)));
-        }};
+        Map<Integer, Product> products = new HashMap<>() {
+            {
+                put(1, new SimpleProduct("ESP", "Espresso", Money.of(3.00)));
+                put(2, new SimpleProduct("LAT", "Latte", Money.of(4.00)));
+                put(3, new SimpleProduct("CAP", "Cappuccino", Money.of(4.50)));
+                put(4, new SimpleProduct("AMER", "Americano", Money.of(2.50)));
+            }
+        };
 
-        Map<Integer, MenuEntry<Function<Product, Product>>> extras = new HashMap<>() {{
-            put(1, new MenuEntry<>("Extra Shot", ExtraShot::new));
-            put(2, new MenuEntry<>("Oat Milk", OatMilk::new));
-            put(3, new MenuEntry<>("Syrup", Syrup::new));
-            put(4, new MenuEntry<>("No Extras", p -> p));
-        }};
+        Map<Integer, MenuEntry<Function<Product, Product>>> extras = new HashMap<>() {
+            {
+                put(1, new MenuEntry<>("Extra Shot", ExtraShot::new));
+                put(2, new MenuEntry<>("Oat Milk", OatMilk::new));
+                put(3, new MenuEntry<>("Syrup", Syrup::new));
+                put(4, new MenuEntry<>("No Extras", p -> p));
+            }
+        };
 
-        Map<Integer, String> payments = new HashMap<>() {{
-            put(1, "Cash");
-            put(2, "Credit Card");
-            put(3, "Wallet");
-        }};
+        Map<Integer, String> payments = new HashMap<>() {
+            {
+                put(1, "Cash");
+                put(2, "Credit Card");
+                put(3, "Wallet");
+            }
+        };
 
-        Map<Integer, MenuEntry<DiscountPolicy>> discounts = new HashMap<>() {{
-            put(1, new MenuEntry<>("No Discount", new NoDiscount()));
-            put(2, new MenuEntry<>("Loyalty 5% (LOYAL5)", new LoyaltyPercentDiscount(5)));
-            put(3, new MenuEntry<>("Coupon 1 euro off (COUPON1)", new FixedCouponDiscount(Money.of(1.00))));
-        }};
+        Map<Integer, MenuEntry<DiscountPolicy>> discounts = new HashMap<>() {
+            {
+                put(1, new MenuEntry<>("No Discount", new NoDiscount()));
+                put(2, new MenuEntry<>("Loyalty 5% (LOYAL5)", new LoyaltyPercentDiscount(5)));
+                put(3, new MenuEntry<>("Coupon 1 euro off (COUPON1)", new FixedCouponDiscount(Money.of(1.00))));
+            }
+        };
 
-        MenuChooser<MenuEntry<DiscountPolicy>> discountChooser = new MenuChooser<MenuEntry<DiscountPolicy>>(discounts, "a discount option");
+        MenuChooser<MenuEntry<DiscountPolicy>> discountChooser = new MenuChooser<MenuEntry<DiscountPolicy>>(discounts,
+                "a discount option");
         MenuChooser<Product> productChooser = new MenuChooser<>(products, "a product");
         MenuChooser<MenuEntry<Function<Product, Product>>> extraChooser = new MenuChooser<>(extras, "an extra");
         MenuChooser<String> paymentChooser = new MenuChooser<>(payments, "a payment method");
 
         Scanner scanner = new Scanner(System.in);
         List<Product> order = new ArrayList<>();
+        Order order_ = new Order(OrderIds.next());
 
         System.out.println("\nWelcome to Meowcafe!");
 
@@ -80,7 +90,7 @@ public class Main2 {
             while (addingExtras) { // allow multiple extrs to be added
                 MenuEntry<Function<Product, Product>> extraChoice = extraChooser.display();
                 decorated = extraChoice.getValue().apply(decorated);
-                if(extraChoice.toString().equals("No Extras")) {
+                if (extraChoice.toString().equals("No Extras")) {
                     addingExtras = false;
                 }
             }
@@ -88,6 +98,7 @@ public class Main2 {
             for (int i = 0; i < quantity; i++) {
                 order.add(decorated);
             }
+            order_.addItem(new LineItem(decorated, quantity));
 
             System.out.print("Add another product? (y/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("n")) {
@@ -100,23 +111,23 @@ public class Main2 {
         var kitchen_display = new KitchenDisplay();
         var delivery_desk = new DeliveryDesk();
         var customer_notifier = new CustomerNotifier();
-        Order product_order = new Order(OrderIds.next());
-
+        // Order product_order = new Order(OrderIds.next());
+        Order product_order = order_;
         // Register observers and add products to order
         for (Product p : order) {
             product_order.register(kitchen_display);
             product_order.register(delivery_desk);
             product_order.register(customer_notifier);
-            product_order.addItem(new LineItem(p,1));
+            // product_order.addItem(new LineItem(p, 1));
         }
 
         product_order.markReady();
 
         String chosenPayment = paymentChooser.display();
-        PaymentStrategy paymentMethod =  null;
-        switch(chosenPayment) {
+        PaymentStrategy paymentMethod = null;
+        switch (chosenPayment) {
             case "Cash":
-                paymentMethod= new CashPayment();
+                paymentMethod = new CashPayment();
                 break;
             case "Credit Card":
                 System.out.print("Enter card number: ");
@@ -132,16 +143,16 @@ public class Main2 {
                 System.out.println("Invalid payment method selected");
                 System.exit(1);
         }
-        //paymentMethod.pay(product_order);
+        // paymentMethod.pay(product_order);
 
         // select discount
         DiscountPolicy discountPolicy = discountChooser.display().getValue();
 
-        int tax = 10;
+        int tax = 50;
         var pricing = new PricingService(discountPolicy, new FixedRateTaxPolicy(tax));
         var printer = new ReceiptPrinter();
         var checkout = new CheckoutService(pricing, printer, tax);
-        product_order.items().removeLast();
-        checkout.checkout(product_order);
+        // product_order.items().removeLast();
+        checkout.checkout(product_order, paymentMethod);
     }
 }

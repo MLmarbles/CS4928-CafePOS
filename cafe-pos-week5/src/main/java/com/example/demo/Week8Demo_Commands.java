@@ -1,0 +1,29 @@
+package com.example.demo;
+
+import com.example.command.AddItemCommand;
+import com.example.command.OrderService;
+import com.example.command.PayOrderCommand;
+import com.example.command.PosRemote;
+import com.example.domain.Order;
+import com.example.domain.OrderIds;
+import com.example.payment.CardPayment;
+
+public final class Week8Demo_Commands {
+    public static void main(String[] args) {
+        Order order = new Order(OrderIds.next());
+        OrderService service = new OrderService(order);
+
+        PosRemote remote = new PosRemote(3);
+        remote.setSlot(0, new AddItemCommand(service, "ESP+SHOT+OAT", 1));
+        remote.setSlot(1, new AddItemCommand(service, "LAT+L", 2));
+        remote.setSlot(2, new PayOrderCommand(service, new CardPayment("1234567890123456"), 10));
+
+        remote.press(0);
+        remote.press(1);
+
+        remote.undo(); // remove last add
+
+        remote.press(1); // add again
+        remote.press(2); // pay
+    }
+}

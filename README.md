@@ -12,3 +12,7 @@ If we wanted to add a new discount type we could use the discount policy interfa
 Week8 
 Command decouples UI from business logic in PosRemote letting it trigger generic Command objects instead of calling specific methods,
 so the UI doesnt need to know about the busines logic behind the button just that it executes the command
+
+Week9
+By having all composite methods throw exceptions we are choosing safety as this prevents accidental calls on leaf nodes, though we are sacrificing some transparency as not every sub class suppports every operation.
+When adding a new stage like preparing or ready I can just add a new state class instead of writing long conditionals.

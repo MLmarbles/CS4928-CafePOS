@@ -19,4 +19,10 @@ When adding a new stage like preparing or ready I can just add a new state class
 
 Week 10
 README trade-off note (Layering vs Partitioning
-
+We decided to go with a layered monolithic architecture for the cafe pos system as it is simpler to implement and manage for a small to medium sized application.
+Layered architectures provide clear separation of concerns between different layers like presentation, app, domain, infrastructure and  business logic which makes it easier to maintain and understand.
+Partitioning would provide better scalability and fault tolerance but adds complexity in terms of communication between partitions and data consistency as we would have to use docker containers or something similar and communication
+between services would use REST which adds complexity and latency. 
+Some seams that would be natural candidates for partitioning would be separating the payment processing into its own service as it could involve third party integrations and security concerns,
+or separating the order management system to handle high volume of orders independently.
+Given the scope of the cafe pos system we felt that the benefits of a layered architecture outweighed the advantages of partitioning.

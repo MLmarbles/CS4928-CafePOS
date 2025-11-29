@@ -16,3 +16,7 @@ so the UI doesnt need to know about the busines logic behind the button just tha
 Week9
 By having all composite methods throw exceptions we are choosing safety as this prevents accidental calls on leaf nodes, though we are sacrificing some transparency as not every sub class suppports every operation.
 When adding a new stage like preparing or ready I can just add a new state class instead of writing long conditionals.
+
+Week 10
+README trade-off note (Layering vs Partitioning
+
